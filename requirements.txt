@@ -1,0 +1,8 @@
+requests
+beautifulsoup4
+lxml
+
+# pip-system-certs: needed on this machine because Avast's HTTPS-scanning
+# proxy (aswMonFltProxy) intercepts TLS with its own cert, which Windows
+# trusts but Python's bundled certifi CA list does not.
+pip-system-certs
