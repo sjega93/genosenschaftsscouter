@@ -29,13 +29,27 @@ def detect(soup: BeautifulSoup, url: str):
     if _is_trefferliste(soup):
         return {"listing_url": url}
 
+    candidates = []
     partner_div = soup.select_one("div[data-partner-url]")
     if partner_div is not None:
-        partner_url = urljoin(url, partner_div["data-partner-url"])
+        candidates.append(partner_div["data-partner-url"])
+
+    # Some sites don't embed the widget but link to their partner listing
+    # page directly or load it in an iframe,
+    # e.g. newhome.ch/de/partner/immobilien?pc=447267.
+    for a in soup.find_all("a", href=True):
+        if re.search(r"newhome\.ch/[a-z]{2}/partner/", a["href"]):
+            candidates.append(a["href"])
+    for frame in soup.find_all("iframe", src=True):
+        if re.search(r"newhome\.ch/[a-z]{2}/partner/", frame["src"]):
+            candidates.append(frame["src"])
+
+    for candidate in candidates:
+        partner_url = urljoin(url, candidate)
         try:
             listing_soup, listing_url = fetch(partner_url)
         except requests.RequestException:
-            return None
+            continue
         if _is_trefferliste(listing_soup):
             return {"listing_url": listing_url}
 
