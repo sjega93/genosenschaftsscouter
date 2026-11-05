@@ -1,0 +1,13 @@
+[project]
+name = "genosenschaftsscouter"
+version = "0.1.0"
+description = "Apartment listing scraper for Swiss housing co-ops"
+requires-python = ">=3.11"
+dependencies = [
+    "requests",
+    "beautifulsoup4",
+    "lxml",
+    # Needed on Windows where Avast's HTTPS-scanning proxy intercepts TLS
+    # with its own cert that Python's bundled certifi CA list does not trust.
+    "pip-system-certs",
+]
